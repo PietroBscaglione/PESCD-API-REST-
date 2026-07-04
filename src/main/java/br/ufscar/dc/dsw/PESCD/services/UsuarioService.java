@@ -24,7 +24,9 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
 import java.util.EnumSet;
+import java.util.LinkedHashSet;
 import java.util.List;
+import java.util.Set;
 import java.util.UUID;
 
 @Service
@@ -117,11 +119,11 @@ public class UsuarioService {
         form.setEmail(usuario.getEmail());
         form.setUsername(usuario.getUsername());
         form.setEnabled(usuario.isEnabled());
-        usuario.getPerfis().stream()
+        var perfisGerenciaveis = usuario.getPerfis().stream()
                 .map(perfil -> perfil.getNome())
                 .filter(this::isPerfilGerenciavel)
-                .findFirst()
-                .ifPresent(form::setPerfil);
+                .collect(java.util.stream.Collectors.toCollection(LinkedHashSet::new));
+        form.setPerfis(perfisGerenciaveis);
         return form;
     }
 
@@ -131,20 +133,20 @@ public class UsuarioService {
             throw new ValidacaoNegocioException("admin.usuario.error.password.obrigatoria");
         }
         validarSenha(form.getPassword());
-        validarPerfilGerenciavel(form.getPerfil());
+        validarPerfisGerenciaveis(form.getPerfis());
         validarEmailUnico(form.getEmail(), null);
         validarUsernameUnico(form.getUsername(), null);
 
         var usuario = new UsuarioModel();
         aplicarDadosBasicos(usuario, form);
         usuario.setPassword(passwordEncoder.encode(form.getPassword()));
-        atribuirPerfil(usuario, form.getPerfil());
+        atribuirPerfis(usuario, form.getPerfis());
         return usuarioRepository.save(usuario);
     }
 
     @Transactional
     public UsuarioModel atualizarUsuarioAdmin(UUID id, AdminUsuarioForm form) {
-        validarPerfilGerenciavel(form.getPerfil());
+        validarPerfisGerenciaveis(form.getPerfis());
         var usuario = buscarPorId(id);
         validarEmailUnico(form.getEmail(), id);
         validarUsernameUnico(form.getUsername(), id);
@@ -154,7 +156,7 @@ public class UsuarioService {
             validarSenha(form.getPassword());
             usuario.setPassword(passwordEncoder.encode(form.getPassword()));
         }
-        atribuirPerfil(usuario, form.getPerfil());
+        atribuirPerfis(usuario, form.getPerfis());
         return usuarioRepository.save(usuario);
     }
 
@@ -208,11 +210,13 @@ public class UsuarioService {
         usuario.setEnabled(form.isEnabled());
     }
 
-    private void atribuirPerfil(UsuarioModel usuario, PerfilUsuario perfilUsuario) {
-        var perfil = perfilRepository.findByNome(perfilUsuario)
-                .orElseThrow(RecursoNaoEncontradoException::new);
+    private void atribuirPerfis(UsuarioModel usuario, Set<PerfilUsuario> perfisUsuario) {
         usuario.getPerfis().clear();
-        usuario.adicionarPerfil(perfil);
+        perfisUsuario.forEach(perfilUsuario -> {
+            var perfil = perfilRepository.findByNome(perfilUsuario)
+                    .orElseThrow(RecursoNaoEncontradoException::new);
+            usuario.adicionarPerfil(perfil);
+        });
     }
 
     private void validarEmailUnico(String email, UUID usuarioIdAtual) {
@@ -231,8 +235,8 @@ public class UsuarioService {
         });
     }
 
-    private void validarPerfilGerenciavel(PerfilUsuario perfil) {
-        if (!isPerfilGerenciavel(perfil)) {
+    private void validarPerfisGerenciaveis(Set<PerfilUsuario> perfis) {
+        if (perfis == null || perfis.isEmpty() || perfis.stream().anyMatch(perfil -> !isPerfilGerenciavel(perfil))) {
             throw new ValidacaoNegocioException("admin.usuario.error.perfil.invalido");
         }
     }

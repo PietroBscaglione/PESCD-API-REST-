@@ -3,7 +3,10 @@ package br.ufscar.dc.dsw.PESCD.dtos;
 import br.ufscar.dc.dsw.PESCD.models.PerfilUsuario;
 import jakarta.validation.constraints.Email;
 import jakarta.validation.constraints.NotBlank;
-import jakarta.validation.constraints.NotNull;
+import jakarta.validation.constraints.NotEmpty;
+
+import java.util.LinkedHashSet;
+import java.util.Set;
 
 public class AdminUsuarioForm {
     private String nomeCompleto;
@@ -14,7 +17,9 @@ public class AdminUsuarioForm {
 
     private String username;
     private String password;
-    private PerfilUsuario perfil;
+
+    @NotEmpty(message = "{admin.usuario.error.perfil.invalido}")
+    private Set<PerfilUsuario> perfis = new LinkedHashSet<>();
 
     private boolean enabled = true;
 
@@ -51,11 +56,22 @@ public class AdminUsuarioForm {
     }
 
     public PerfilUsuario getPerfil() {
-        return perfil;
+        return perfis.stream().findFirst().orElse(null);
     }
 
     public void setPerfil(PerfilUsuario perfil) {
-        this.perfil = perfil;
+        this.perfis.clear();
+        if (perfil != null) {
+            this.perfis.add(perfil);
+        }
+    }
+
+    public Set<PerfilUsuario> getPerfis() {
+        return perfis;
+    }
+
+    public void setPerfis(Set<PerfilUsuario> perfis) {
+        this.perfis = perfis != null ? perfis : new LinkedHashSet<>();
     }
 
     public boolean isEnabled() {

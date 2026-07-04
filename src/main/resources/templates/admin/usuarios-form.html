@@ -89,16 +89,20 @@
             </div>
 
             <div class="col-md-6">
-                <label class="form-label" for="perfil" th:text="#{admin.usuario.campo.perfil}">Perfil *</label>
-                <select class="form-select" id="perfil" th:field="*{perfil}">
-                    <option value="" th:text="#{admin.usuario.campo.perfil.selecione}">Selecione</option>
-                    <option th:each="perfil : ${perfis}"
-                            th:value="${perfil}"
-                            th:text="#{'admin.usuario.perfil.' + ${perfil.name()}}">
-                        Perfil
-                    </option>
-                </select>
-                <div class="text-danger small mt-1" th:if="${#fields.hasErrors('perfil')}" th:errors="*{perfil}">
+                <fieldset>
+                    <legend class="form-label mb-2" th:text="#{admin.usuario.campo.perfil}">Perfis *</legend>
+                    <div class="d-grid gap-2">
+                        <div class="form-check" th:each="perfil : ${perfis}">
+                            <input class="form-check-input" type="checkbox" th:field="*{perfis}" th:value="${perfil}">
+                            <label class="form-check-label"
+                                   th:for="${#ids.prev('perfis')}"
+                                   th:text="#{'admin.usuario.perfil.' + ${perfil.name()}}">
+                                Perfil
+                            </label>
+                        </div>
+                    </div>
+                </fieldset>
+                <div class="text-danger small mt-1" th:if="${#fields.hasErrors('perfis')}" th:errors="*{perfis}">
                     Perfil obrigatorio.
                 </div>
             </div>

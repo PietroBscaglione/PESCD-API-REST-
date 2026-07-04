@@ -18,7 +18,25 @@ public interface AlunoOfertaRepository extends JpaRepository<AlunoOfertaModel, U
     @EntityGraph(attributePaths = {"aluno", "oferta"})
     List<AlunoOfertaModel> findByOfertaId(UUID ofertaId);
 
-    @EntityGraph(attributePaths = {"aluno", "oferta", "logsStatus"})
+    @EntityGraph(attributePaths = {
+            "aluno",
+            "oferta",
+            "oferta.professorResponsavel",
+            "logsStatus",
+            "logsStatus.alteradoPor",
+            "planoTrabalho",
+            "planoTrabalho.professorSupervisor",
+            "planoTrabalho.aprovacaoPlano",
+            "planoTrabalho.aprovacaoPlano.aprovadoPor",
+            "documentacaoDocencia",
+            "documentacaoDocencia.analiseDocumentacao",
+            "documentacaoDocencia.analiseDocumentacao.analisadoPor",
+            "relatorioFinal",
+            "relatorioFinal.aprovacaoSupervisor",
+            "relatorioFinal.aprovacaoSupervisor.aprovadoPor",
+            "relatorioFinal.conclusaoResponsavel",
+            "relatorioFinal.conclusaoResponsavel.concluidoPor"
+    })
     Optional<AlunoOfertaModel> findWithDetalhesById(UUID id);
 
     @EntityGraph(attributePaths = {"aluno", "oferta", "oferta.professorResponsavel", "planoTrabalho"})
