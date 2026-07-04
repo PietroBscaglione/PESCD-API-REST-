@@ -50,6 +50,27 @@ public class DocumentacaoDocenciaService {
         return matricula;
     }
 
+    @Transactional(readOnly = true)
+    public DocumentacaoDocenciaForm consultarDocumentacao(String username, UUID ofertaId) {
+        var matricula = alunoOfertaRepository.findByAlunoUsernameAndOfertaId(username, ofertaId)
+                .orElseThrow(RecursoNaoEncontradoException::new);
+        var form = new DocumentacaoDocenciaForm();
+        preencherDadosMatricula(form, matricula);
+
+        var documentacaoOptional = documentacaoDocenciaRepository.findOptionalByAlunoOfertaId(matricula.getId());
+        if (documentacaoOptional.isEmpty()) {
+            return form;
+        }
+
+        var documentacao = documentacaoOptional.get();
+        form.setNomeInstituicao(documentacao.getNomeInstituicao());
+        form.setNomeDisciplina(documentacao.getNomeDisciplina());
+        form.setCursoDisciplina(documentacao.getCursoDisciplina());
+        form.setCargaHoraria(documentacao.getCargaHoraria());
+        form.setEnviadoEm(documentacao.getEnviadoEm());
+        return form;
+    }
+
     @Transactional
     public DocumentacaoDocenciaModel enviarDocumentacao(
             String username,
@@ -96,6 +117,18 @@ public class DocumentacaoDocenciaService {
         if (documentacaoDocenciaRepository.findOptionalByAlunoOfertaId(matricula.getId()).isPresent()) {
             throw new ValidacaoNegocioException("documentacao.error.ja.enviada");
         }
+    }
+
+    private void preencherDadosMatricula(DocumentacaoDocenciaForm form, AlunoOfertaModel matricula) {
+        var oferta = matricula.getOferta();
+        form.setStatus(matricula.getStatus());
+        form.setOfertaId(oferta.getId());
+        form.setOfertaNome(oferta.getNome());
+        form.setOfertaSemestre(oferta.getSemestre());
+        form.setOfertaDataInicio(oferta.getDataInicio());
+        form.setOfertaDataFim(oferta.getDataFim());
+        form.setOfertaStatus(oferta.getStatus());
+        form.setOfertaProfessorResponsavel(oferta.getProfessorResponsavel().getNomeCompleto());
     }
 
     private void validarArquivo(MultipartFile arquivo) {

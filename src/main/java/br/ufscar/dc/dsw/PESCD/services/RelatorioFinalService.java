@@ -56,6 +56,31 @@ public class RelatorioFinalService {
         return logStatusAlunoOfertaService.listarPorMatricula(alunoOfertaId);
     }
 
+    @Transactional(readOnly = true)
+    public RelatorioFinalForm consultarRelatorio(String username, UUID ofertaId) {
+        var matricula = alunoOfertaRepository.findByAlunoUsernameAndOfertaId(username, ofertaId)
+                .orElseThrow(RecursoNaoEncontradoException::new);
+        var form = new RelatorioFinalForm();
+        preencherDadosMatricula(form, matricula);
+
+        var relatorioOptional = relatorioFinalRepository.findOptionalByAlunoOfertaId(matricula.getId());
+        if (relatorioOptional.isEmpty()) {
+            return form;
+        }
+
+        var relatorio = relatorioOptional.get();
+        form.setFrequenciaInformada(relatorio.getFrequenciaInformada());
+        form.setEnviadoEm(relatorio.getEnviadoEm());
+        form.setHistoricoStatus(listarHistorico(matricula.getId()).stream()
+                .map(log -> new RelatorioFinalForm.HistoricoStatusDto(
+                        log.getStatusAnterior(),
+                        log.getStatusNovo(),
+                        log.getAlteradoEm(),
+                        log.getObservacao()))
+                .toList());
+        return form;
+    }
+
     @Transactional
     public RelatorioFinalModel enviarRelatorio(
             String username,
@@ -101,6 +126,18 @@ public class RelatorioFinalService {
         if (relatorioFinalRepository.findOptionalByAlunoOfertaId(matricula.getId()).isPresent()) {
             throw new ValidacaoNegocioException("relatorio.error.ja.enviado");
         }
+    }
+
+    private void preencherDadosMatricula(RelatorioFinalForm form, AlunoOfertaModel matricula) {
+        var oferta = matricula.getOferta();
+        form.setStatus(matricula.getStatus());
+        form.setOfertaId(oferta.getId());
+        form.setOfertaNome(oferta.getNome());
+        form.setOfertaSemestre(oferta.getSemestre());
+        form.setOfertaDataInicio(oferta.getDataInicio());
+        form.setOfertaDataFim(oferta.getDataFim());
+        form.setOfertaStatus(oferta.getStatus());
+        form.setOfertaProfessorResponsavel(oferta.getProfessorResponsavel().getNomeCompleto());
     }
 
     private void validarArquivo(MultipartFile arquivo) {

@@ -55,6 +55,28 @@ public class PlanoTrabalhoService {
         return matricula;
     }
 
+    @Transactional(readOnly = true)
+    public PlanoTrabalhoForm consultarPlano(String username, UUID ofertaId) {
+        var matricula = alunoOfertaRepository.findByAlunoUsernameAndOfertaId(username, ofertaId)
+                .orElseThrow(RecursoNaoEncontradoException::new);
+        var form = new PlanoTrabalhoForm();
+        preencherDadosMatricula(form, matricula);
+
+        var planoOptional = planoTrabalhoRepository.findOptionalByAlunoOfertaId(matricula.getId());
+        if (planoOptional.isEmpty()) {
+            return form;
+        }
+
+        var plano = planoOptional.get();
+        form.setCodigoDisciplina(plano.getCodigoDisciplina());
+        form.setNomeDisciplina(plano.getNomeDisciplina());
+        form.setCursoDisciplina(plano.getCursoDisciplina());
+        form.setProfessorSupervisorId(plano.getProfessorSupervisor().getId());
+        form.setProfessorSupervisorNome(plano.getProfessorSupervisor().getNomeCompleto());
+        form.setEnviadoEm(plano.getEnviadoEm());
+        return form;
+    }
+
     @Transactional
     public PlanoTrabalhoModel enviarPlano(String username, UUID ofertaId, PlanoTrabalhoForm form, MultipartFile arquivo) {
         var matricula = alunoOfertaRepository.findByAlunoUsernameAndOfertaId(username, ofertaId)
@@ -104,6 +126,18 @@ public class PlanoTrabalhoService {
         if (planoTrabalhoRepository.findOptionalByAlunoOfertaId(matricula.getId()).isPresent()) {
             throw new ValidacaoNegocioException("plano.error.ja.enviado");
         }
+    }
+
+    private void preencherDadosMatricula(PlanoTrabalhoForm form, AlunoOfertaModel matricula) {
+        var oferta = matricula.getOferta();
+        form.setStatus(matricula.getStatus());
+        form.setOfertaId(oferta.getId());
+        form.setOfertaNome(oferta.getNome());
+        form.setOfertaSemestre(oferta.getSemestre());
+        form.setOfertaDataInicio(oferta.getDataInicio());
+        form.setOfertaDataFim(oferta.getDataFim());
+        form.setOfertaStatus(oferta.getStatus());
+        form.setOfertaProfessorResponsavel(oferta.getProfessorResponsavel().getNomeCompleto());
     }
 
     private void validarArquivo(MultipartFile arquivo) {
