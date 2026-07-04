@@ -1,0 +1,153 @@
+<!DOCTYPE html>
+<html lang="pt-BR" xmlns:th="http://www.thymeleaf.org" xmlns:sec="https://www.thymeleaf.org/extras/spring-security">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title th:text="#{responsavel.relatorio.page.title}">PESCD - Avaliar relatorio</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
+    <style>
+        body { background: #f3f6ef; color: #17211a; font-family: Georgia, "Times New Roman", serif; }
+        .topbar, .panel { background: #fbfdf9; border: 1px solid #d9e0da; }
+        .topbar { border-width: 0 0 1px; }
+        .content-shell { max-width: 1040px; }
+        .small-muted, .readonly-label, label, .form-control, .form-select, .btn, .alert { font-family: Verdana, Geneva, sans-serif; }
+        .small-muted, .readonly-label { color: #647069; }
+        .readonly-label { font-size: 0.78rem; text-transform: uppercase; }
+        .btn-pescd { background: #1f6f4a; border-color: #1f6f4a; color: #fff; font-weight: 700; }
+        .btn-pescd:hover { background: #155637; border-color: #155637; color: #fff; }
+        .btn-outline-pescd { border-color: #1f6f4a; color: #1f6f4a; font-weight: 700; }
+        .btn-outline-pescd:hover { background: #1f6f4a; color: #fff; }
+        .required { color: #b02a37; }
+    </style>
+</head>
+<body>
+<header class="topbar">
+    <div class="container content-shell py-3 d-flex flex-column flex-sm-row justify-content-between gap-3">
+        <div>
+            <div class="h4 mb-1">PESCD</div>
+            <div class="small-muted"><span th:text="#{responsavel.topbar.logged.as}">Logado como</span> <strong sec:authentication="name">usuario</strong></div>
+        </div>
+        <a class="btn btn-outline-pescd align-self-start" th:href="@{/responsavel/ofertas/{id}(id=${oferta.id})}" th:text="#{botao.cancelar}">Cancelar</a>
+    </div>
+</header>
+
+<main class="container content-shell py-5">
+    <div class="mb-4">
+        <h1 class="display-6 mb-2" th:text="#{responsavel.relatorio.titulo}">Avaliar Relat&oacute;rio do Est&aacute;gio</h1>
+        <p class="small-muted mb-0" th:text="#{responsavel.relatorio.subtitulo}">Confira o plano, o relat&oacute;rio e a avalia&ccedil;&atilde;o do supervisor antes de concluir.</p>
+    </div>
+
+    <div class="alert alert-danger" th:if="${errorMessageKey}" th:text="#{${errorMessageKey}}">Erro de valida&ccedil;&atilde;o.</div>
+
+    <section class="panel rounded-2 p-4 mb-4">
+        <h2 class="h5 mb-3" th:text="#{responsavel.relatorio.dados.aluno.plano}">Dados do aluno e do plano</h2>
+        <div class="row g-3">
+            <div class="col-md-6">
+                <div class="readonly-label" th:text="#{responsavel.relatorio.aluno}">Aluno</div>
+                <div th:text="${aluno.nomeCompleto}">Aluno</div>
+            </div>
+            <div class="col-md-6">
+                <div class="readonly-label" th:text="#{responsavel.relatorio.oferta}">Oferta</div>
+                <div th:text="${oferta.nome}">Oferta</div>
+            </div>
+            <div class="col-md-4">
+                <div class="readonly-label" th:text="#{plano.campo.codigo}">C&oacute;digo da disciplina</div>
+                <div th:text="${plano.codigoDisciplina}">DISC001</div>
+            </div>
+            <div class="col-md-8">
+                <div class="readonly-label" th:text="#{plano.campo.nome}">Disciplina</div>
+                <div th:text="${plano.nomeDisciplina}">Disciplina</div>
+            </div>
+            <div class="col-md-6">
+                <div class="readonly-label" th:text="#{plano.campo.curso}">Curso</div>
+                <div th:text="${plano.cursoDisciplina}">Curso</div>
+            </div>
+            <div class="col-md-3">
+                     <div class="readonly-label" th:text="#{responsavel.relatorio.plano}">Plano</div>
+                <a class="btn btn-sm btn-outline-pescd mt-1" target="_blank"
+                         th:href="@{/responsavel/ofertas/matriculas/{id}/plano(id=${matricula.id})}"
+                         th:text="#{responsavel.relatorio.abrir.pdf}">Abrir PDF</a>
+            </div>
+            <div class="col-md-3">
+                     <div class="readonly-label" th:text="#{responsavel.relatorio.relatorio}">Relat&oacute;rio</div>
+                <a class="btn btn-sm btn-outline-pescd mt-1" target="_blank"
+                         th:href="@{/responsavel/ofertas/matriculas/{id}/relatorio(id=${matricula.id})}"
+                         th:text="#{responsavel.relatorio.abrir.pdf}">Abrir PDF</a>
+            </div>
+        </div>
+    </section>
+
+    <section class="panel rounded-2 p-4 mb-4" th:if="${relatorio.aprovacaoSupervisor != null}">
+        <h2 class="h5 mb-3" th:text="#{responsavel.relatorio.parecer.supervisor}">Parecer do Supervisor</h2>
+        <p class="small-muted mb-3" th:text="${relatorio.aprovacaoSupervisor.parecer}">Parecer registrado.</p>
+        <div class="row g-3">
+            <div class="col-md-6">
+                <div class="readonly-label" th:text="#{supervisor.campo.frequencia}">Frequ&ecirc;ncia sugerida</div>
+                <div><span th:text="${relatorio.aprovacaoSupervisor.frequencia}">90</span>%</div>
+            </div>
+            <div class="col-md-6">
+                <div class="readonly-label" th:text="#{supervisor.campo.nota}">Sugest&atilde;o de nota</div>
+                <div th:text="${relatorio.aprovacaoSupervisor.sugestaoNota}">A</div>
+            </div>
+        </div>
+    </section>
+
+    <section class="panel rounded-2 p-4 mb-4">
+        <h2 class="h5 mb-3" th:text="#{responsavel.relatorio.historico.titulo}">Hist&oacute;rico de mudan&ccedil;as de status</h2>
+        <div class="table-responsive" th:if="${!#lists.isEmpty(historico)}">
+            <table class="table table-striped table-hover align-middle mb-0">
+                <thead>
+                <tr>
+                    <th th:text="#{aluno.log.data}">Data</th>
+                    <th th:text="#{aluno.log.anterior}">Status anterior</th>
+                    <th th:text="#{aluno.log.novo}">Novo status</th>
+                    <th th:text="#{aluno.log.observacao}">Observa&ccedil;&atilde;o</th>
+                </tr>
+                </thead>
+                <tbody>
+                <tr th:each="log : ${historico}">
+                    <td th:text="${#temporals.format(log.alteradoEm, 'dd/MM/yyyy HH:mm')}">01/03/2026 10:00</td>
+                    <td th:text="${#strings.replace(log.statusAnterior.name(), '_', ' ')}">NAO ENVIADO</td>
+                    <td th:text="${#strings.replace(log.statusNovo.name(), '_', ' ')}">RELATORIO APROVADO</td>
+                    <td th:text="${log.observacao}">Observacao</td>
+                </tr>
+                </tbody>
+            </table>
+        </div>
+        <p class="small-muted mb-0" th:if="${#lists.isEmpty(historico)}" th:text="#{responsavel.relatorio.historico.vazio}">Nenhuma mudan&ccedil;a registrada.</p>
+    </section>
+
+    <form class="panel rounded-2 p-4 needs-validation"
+          th:action="@{/responsavel/ofertas/matriculas/{id}/concluir-relatorio(id=${matricula.id})}"
+          th:object="${conclusaoResponsavelForm}"
+          method="post"
+          novalidate>
+        <h2 class="h5 mb-3" th:text="#{responsavel.relatorio.conclusao.titulo}">Conclus&atilde;o do Professor Respons&aacute;vel</h2>
+        <div class="row g-3">
+            <div class="col-12">
+                <label class="form-label" for="parecer" th:text="#{supervisor.campo.parecer}">Parecer <span class="required">*</span></label>
+                <textarea class="form-control" id="parecer" rows="5" th:field="*{parecer}" th:errorclass="is-invalid" required></textarea>
+                <div class="invalid-feedback" th:if="${#fields.hasErrors('parecer')}" th:errors="*{parecer}">Parecer obrigatorio.</div>
+            </div>
+            <div class="col-md-6">
+                <label class="form-label" for="frequenciaFinal" th:text="#{responsavel.relatorio.frequencia.final}">Frequ&ecirc;ncia Final <span class="required">*</span></label>
+                <input class="form-control" id="frequenciaFinal" type="number" min="0" max="100" th:field="*{frequenciaFinal}" th:errorclass="is-invalid" required>
+                <div class="invalid-feedback" th:if="${#fields.hasErrors('frequenciaFinal')}" th:errors="*{frequenciaFinal}">Frequencia obrigatoria.</div>
+            </div>
+            <div class="col-md-6">
+                <label class="form-label" for="notaFinal" th:text="#{responsavel.relatorio.nota.final}">Nota Final <span class="required">*</span></label>
+                <select class="form-select" id="notaFinal" th:field="*{notaFinal}" th:errorclass="is-invalid" required>
+                    <option value="" th:text="#{supervisor.campo.nota.selecione}">Selecione</option>
+                    <option th:each="nota : ${notas}" th:value="${nota}" th:text="${nota}">A</option>
+                </select>
+                <div class="invalid-feedback" th:if="${#fields.hasErrors('notaFinal')}" th:errors="*{notaFinal}">Nota obrigatoria.</div>
+            </div>
+        </div>
+        <div class="d-flex flex-column flex-sm-row justify-content-end gap-2 mt-4">
+            <a class="btn btn-outline-pescd" th:href="@{/responsavel/ofertas/{id}(id=${oferta.id})}" th:text="#{botao.cancelar}">Cancelar</a>
+            <button class="btn btn-pescd" type="submit" th:text="#{supervisor.botao.aprovar.relatorio}">Aprovar</button>
+        </div>
+    </form>
+</main>
+</body>
+</html>

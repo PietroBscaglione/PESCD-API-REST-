@@ -1,0 +1,118 @@
+<!DOCTYPE html>
+<html lang="pt-BR" xmlns:th="http://www.thymeleaf.org" xmlns:sec="https://www.thymeleaf.org/extras/spring-security">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title th:text="#{responsavel.oferta.detalhes.page.title}">PESCD - Detalhes da oferta</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
+    <style>
+        body { background: #f3f6ef; color: #17211a; font-family: Georgia, "Times New Roman", serif; }
+        .topbar, .panel { background: #fbfdf9; border: 1px solid #d9e0da; }
+        .topbar { border-width: 0 0 1px; }
+        .content-shell { max-width: 1120px; }
+        .small-muted, .readonly-label, .btn, .table, .alert { font-family: Verdana, Geneva, sans-serif; }
+        .small-muted, .readonly-label { color: #647069; }
+        .readonly-label { font-size: 0.78rem; text-transform: uppercase; }
+        .btn-pescd { background: #1f6f4a; border-color: #1f6f4a; color: #fff; font-weight: 700; }
+        .btn-pescd:hover { background: #155637; border-color: #155637; color: #fff; }
+        .btn-outline-pescd { border-color: #1f6f4a; color: #1f6f4a; font-weight: 700; }
+        .btn-outline-pescd:hover { background: #1f6f4a; color: #fff; }
+        .table { --bs-table-bg: #fbfdf9; --bs-table-striped-bg: #f5f8f1; border-color: #d9e0da; }
+    </style>
+</head>
+<body>
+<header class="topbar">
+    <div class="container content-shell py-3 d-flex flex-column flex-sm-row justify-content-between gap-3">
+        <div>
+            <div class="h4 mb-1">PESCD</div>
+            <div class="small-muted"><span th:text="#{responsavel.topbar.logged.as}">Logado como</span> <strong sec:authentication="name">usuario</strong></div>
+        </div>
+        <a class="btn btn-outline-pescd align-self-start" th:href="@{/responsavel/ofertas}" th:text="#{botao.voltar.lista}">Voltar</a>
+    </div>
+</header>
+
+<main class="container content-shell py-5">
+    <div class="alert alert-success" th:if="${successMessageKey}" th:text="#{${successMessageKey}}">Opera&ccedil;&atilde;o realizada.</div>
+    <div class="alert alert-danger" th:if="${errorMessageKey}" th:text="#{${errorMessageKey}}">Erro de valida&ccedil;&atilde;o.</div>
+
+    <section class="panel rounded-2 p-4 mb-4">
+        <div class="d-flex flex-column flex-lg-row justify-content-between gap-3">
+            <div>
+                <h1 class="display-6 mb-3" th:text="${oferta.nome}">PESCD 2026/1</h1>
+                <div class="row g-3">
+                    <div class="col-sm-4">
+                        <div class="readonly-label" th:text="#{oferta.campo.semestre}">Semestre</div>
+                        <div th:text="${oferta.semestre}">2026/1</div>
+                    </div>
+                    <div class="col-sm-4">
+                        <div class="readonly-label" th:text="#{oferta.campo.status}">Status</div>
+                        <span class="badge"
+                              th:classappend="${ofertaResumo.statusExibicao().name() == 'CONCLUIDA'} ? ' bg-success' : (${ofertaResumo.statusExibicao().name() == 'EM_ATRASO'} ? ' bg-danger' : (${ofertaResumo.statusExibicao().name() == 'EM_ANDAMENTO'} ? ' bg-warning text-dark' : ' bg-info text-dark'))"
+                                      th:text="#{${'oferta.status.' + ofertaResumo.statusExibicao().name()}}">EM ANDAMENTO</span>
+                    </div>
+                    <div class="col-sm-4">
+                        <div class="readonly-label" th:text="#{oferta.campo.periodo}">Per&iacute;odo</div>
+                        <div>
+                            <span th:text="${#temporals.format(oferta.dataInicio, 'dd/MM/yyyy')}">01/03/2026</span>
+                            -
+                            <span th:text="${#temporals.format(oferta.dataFim, 'dd/MM/yyyy')}">15/07/2026</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <a class="btn btn-pescd align-self-lg-start"
+               th:if="${podeEncerrar}"
+               th:href="@{/responsavel/ofertas/{id}/encerrar(id=${oferta.id})}">
+                <span th:text="#{responsavel.oferta.detalhes.encerrar}">Encerrar Oferta</span>
+            </a>
+        </div>
+    </section>
+
+    <section class="panel rounded-2 p-3 p-md-4">
+        <h2 class="h4 mb-3" th:text="#{responsavel.oferta.detalhes.alunos.titulo}">Alunos Inscritos</h2>
+        <div class="table-responsive" th:if="${!#lists.isEmpty(alunos)}">
+            <table class="table table-striped table-hover align-middle mb-0">
+                <thead>
+                <tr>
+                    <th th:text="#{aluno.campo.nome}">Nome Completo</th>
+                    <th th:text="#{aluno.campo.email}">E-mail</th>
+                    <th th:text="#{aluno.campo.status}">Status Atual do Aluno</th>
+                    <th class="text-end" th:text="#{oferta.campo.acoes}">A&ccedil;&atilde;o</th>
+                </tr>
+                </thead>
+                <tbody>
+                <tr th:each="matricula : ${alunos}">
+                    <td th:text="${matricula.aluno.nomeCompleto}">Aluno</td>
+                    <td th:text="${matricula.aluno.email}">aluno@ufscar.br</td>
+                    <td>
+                        <span class="badge"
+                              th:classappend="${matricula.status.name() == 'CONCLUIDO_PELO_RESPONSAVEL'} ? ' bg-success' : (${matricula.status.name() == 'NAO_ENVIADO'} ? ' bg-secondary' : ' bg-warning text-dark')"
+                              th:text="#{${'status.aluno.' + matricula.status.name()}}">STATUS</span>
+                    </td>
+                    <td class="text-end">
+                        <div class="d-flex flex-column flex-md-row gap-2 justify-content-end">
+                            <a class="btn btn-sm btn-outline-pescd"
+                               th:href="@{/responsavel/ofertas/{ofertaId}/matriculas/{matriculaId}(ofertaId=${oferta.id}, matriculaId=${matricula.id})}">
+                                <span th:text="#{aluno.botao.detalhes}">Ver Detalhes</span>
+                            </a>
+                            <a class="btn btn-sm btn-pescd"
+                               th:if="${matricula.status.name() == 'RELATORIO_APROVADO_PELO_SUPERVISOR'}"
+                               th:href="@{/responsavel/ofertas/matriculas/{id}/concluir-relatorio(id=${matricula.id})}">
+                                <span th:text="#{responsavel.oferta.detalhes.aprovar.relatorio}">Aprovar Relat&oacute;rio</span>
+                            </a>
+                            <a class="btn btn-sm btn-pescd"
+                               th:if="${matricula.status.name() == 'DOCUMENTACAO_ENVIADA'}"
+                               th:href="@{/responsavel/ofertas/matriculas/{id}/analisar-documentacao(id=${matricula.id})}">
+                                <span th:text="#{responsavel.oferta.detalhes.analisar.documentacao}">Analisar Documenta&ccedil;&atilde;o</span>
+                            </a>
+                        </div>
+                    </td>
+                </tr>
+                </tbody>
+            </table>
+        </div>
+        <p class="small-muted mb-0" th:if="${#lists.isEmpty(alunos)}" th:text="#{responsavel.oferta.detalhes.alunos.vazio}">Nenhum aluno vinculado a esta oferta.</p>
+    </section>
+</main>
+</body>
+</html>

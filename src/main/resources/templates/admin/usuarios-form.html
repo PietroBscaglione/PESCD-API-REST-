@@ -1,0 +1,123 @@
+<!DOCTYPE html>
+<html lang="pt-BR" xmlns:th="http://www.thymeleaf.org" xmlns:sec="https://www.thymeleaf.org/extras/spring-security">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title th:text="${edicao} ? #{admin.usuario.form.editar.page.title} : #{admin.usuario.form.novo.page.title}">
+        PESCD - Usuario
+    </title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
+    <style>
+        body { background: #f3f6ef; color: #17211a; font-family: Georgia, "Times New Roman", serif; }
+        .topbar { background: #fbfdf9; border-bottom: 1px solid #d9e0da; }
+        .content-shell { max-width: 920px; }
+        .small-muted, .form-text, label, .form-control, .form-select, .form-check-label, .alert, .btn { font-family: Verdana, Geneva, sans-serif; }
+        .small-muted, .form-text { color: #647069; }
+        .btn-pescd { background: #1f6f4a; border-color: #1f6f4a; color: #fff; font-weight: 700; }
+        .btn-pescd:hover { background: #155637; border-color: #155637; color: #fff; }
+        .btn-outline-pescd { border-color: #1f6f4a; color: #1f6f4a; font-weight: 700; }
+        .btn-outline-pescd:hover { background: #1f6f4a; color: #fff; }
+        .form-panel { background: #fbfdf9; border: 1px solid #d9e0da; border-radius: 8px; }
+    </style>
+</head>
+<body>
+<header class="topbar">
+    <div class="container content-shell py-3 d-flex flex-column flex-sm-row justify-content-between gap-3">
+        <div>
+            <div class="h4 mb-1" th:text="#{login.brand}">PESCD</div>
+            <div class="small-muted">
+                <span th:text="#{dashboard.logged.as}">Logado como</span>
+                <strong sec:authentication="name">admin</strong>
+            </div>
+        </div>
+        <a class="btn btn-outline-pescd align-self-start" th:href="@{/admin/usuarios}" th:text="#{botao.voltar.lista}">
+            Voltar a lista
+        </a>
+    </div>
+</header>
+
+<main class="container content-shell py-5">
+    <div class="mb-4">
+        <h1 class="display-6 mb-2"
+            th:text="${edicao} ? #{admin.usuario.form.editar.titulo} : #{admin.usuario.form.novo.titulo}">
+            Usuario
+        </h1>
+        <p class="small-muted mb-0" th:text="#{admin.usuario.form.subtitulo}">
+            Informe os dados obrigatorios.
+        </p>
+    </div>
+
+    <div class="alert alert-danger" th:if="${errorMessageKey}" th:text="#{${errorMessageKey}}">
+        Erro.
+    </div>
+
+    <form class="form-panel p-4"
+          th:action="${edicao} ? @{/admin/usuarios/{id}/editar(id=${usuarioId})} : @{/admin/usuarios/novo}"
+          th:object="${adminUsuarioForm}"
+          method="post">
+        <div class="row g-3">
+            <div class="col-12">
+                <label class="form-label" for="nomeCompleto" th:text="#{admin.usuario.campo.nome}">Nome completo *</label>
+                <input class="form-control" id="nomeCompleto" type="text" th:field="*{nomeCompleto}">
+                <div class="text-danger small mt-1" th:if="${#fields.hasErrors('nomeCompleto')}" th:errors="*{nomeCompleto}">
+                    Nome obrigatorio.
+                </div>
+            </div>
+
+            <div class="col-md-6">
+                <label class="form-label" for="email" th:text="#{admin.usuario.campo.email}">E-mail *</label>
+                <input class="form-control" id="email" type="email" th:field="*{email}">
+                <div class="text-danger small mt-1" th:if="${#fields.hasErrors('email')}" th:errors="*{email}">
+                    E-mail obrigatorio.
+                </div>
+            </div>
+
+            <div class="col-md-6">
+                <label class="form-label" for="username" th:text="#{admin.usuario.campo.username}">Username *</label>
+                <input class="form-control" id="username" type="text" th:field="*{username}">
+                <div class="text-danger small mt-1" th:if="${#fields.hasErrors('username')}" th:errors="*{username}">
+                    Username obrigatorio.
+                </div>
+            </div>
+
+            <div class="col-md-6">
+                <label class="form-label" for="password" th:text="#{admin.usuario.campo.password}">Senha *</label>
+                <input class="form-control" id="password" type="password" th:field="*{password}">
+                <div class="form-text" th:if="${edicao}" th:text="#{admin.usuario.campo.password.ajuda.edicao}">
+                    Deixe em branco para manter a senha atual.
+                </div>
+            </div>
+
+            <div class="col-md-6">
+                <label class="form-label" for="perfil" th:text="#{admin.usuario.campo.perfil}">Perfil *</label>
+                <select class="form-select" id="perfil" th:field="*{perfil}">
+                    <option value="" th:text="#{admin.usuario.campo.perfil.selecione}">Selecione</option>
+                    <option th:each="perfil : ${perfis}"
+                            th:value="${perfil}"
+                            th:text="#{'admin.usuario.perfil.' + ${perfil.name()}}">
+                        Perfil
+                    </option>
+                </select>
+                <div class="text-danger small mt-1" th:if="${#fields.hasErrors('perfil')}" th:errors="*{perfil}">
+                    Perfil obrigatorio.
+                </div>
+            </div>
+
+            <div class="col-12">
+                <div class="form-check">
+                    <input class="form-check-input" id="enabled" type="checkbox" th:field="*{enabled}">
+                    <label class="form-check-label" for="enabled" th:text="#{admin.usuario.campo.enabled}">
+                        Ativo
+                    </label>
+                </div>
+            </div>
+        </div>
+
+        <div class="d-flex flex-column flex-sm-row gap-2 justify-content-end mt-4">
+            <a class="btn btn-outline-pescd" th:href="@{/admin/usuarios}" th:text="#{botao.cancelar}">Cancelar</a>
+            <button class="btn btn-pescd" type="submit" th:text="#{botao.salvar}">Salvar</button>
+        </div>
+    </form>
+</main>
+</body>
+</html>

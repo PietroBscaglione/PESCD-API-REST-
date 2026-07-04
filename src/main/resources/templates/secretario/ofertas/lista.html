@@ -1,0 +1,48 @@
+<!DOCTYPE html>
+<html lang="pt-BR" xmlns:th="http://www.thymeleaf.org">
+<head th:replace="~{secretario/layout :: head(#{oferta.lista.titulo})}"></head>
+<body>
+<div th:replace="~{secretario/layout :: header}"></div>
+<main>
+    <div th:replace="~{secretario/layout :: alerts}"></div>
+    <h1 th:text="#{oferta.lista.titulo}">Acompanhar ofertas</h1>
+    <p class="subtitle" th:text="#{oferta.lista.subtitulo}">Lista de ofertas PESCD</p>
+    <div class="actions">
+        <a class="btn btn-primary" th:href="@{/secretario/ofertas/nova}" th:text="#{oferta.botao.nova}">Nova oferta</a>
+    </div>
+    <table th:if="${!#lists.isEmpty(ofertas)}">
+        <thead>
+        <tr>
+            <th th:text="#{oferta.campo.nome}">Nome</th>
+            <th th:text="#{oferta.campo.semestre}">Semestre</th>
+            <th th:text="#{oferta.campo.periodo}">Período</th>
+            <th th:text="#{oferta.campo.professor}">Professor</th>
+            <th th:text="#{oferta.campo.status}">Status</th>
+            <th th:text="#{oferta.campo.acoes}">Ações</th>
+        </tr>
+        </thead>
+        <tbody>
+        <tr th:each="item : ${ofertas}">
+            <td th:text="${item.nome()}">PESCD</td>
+            <td th:text="${item.semestre()}">2026/1</td>
+            <td>
+                <span th:text="${#temporals.format(item.dataInicio(), 'dd/MM/yyyy')}">01/03</span>
+                —
+                <span th:text="${#temporals.format(item.dataFim(), 'dd/MM/yyyy')}">15/07</span>
+            </td>
+            <td th:text="${item.professorNome()}">Professor</td>
+            <td>
+                <span class="badge" th:text="#{'oferta.status.' + ${item.statusExibicao().name()}}">Status</span>
+            </td>
+            <td>
+                <a class="btn" th:href="@{/secretario/ofertas/{id}(id=${item.id()})}" th:text="#{oferta.botao.detalhes}">Detalhes</a>
+                <a class="btn" th:href="@{/secretario/ofertas/{id}/alunos(id=${item.id()})}" th:text="#{oferta.botao.alunos}">Alunos</a>
+                <a class="btn" th:if="${item.podeEncerrar()}" th:href="@{/secretario/ofertas/{id}/encerrar(id=${item.id()})}" th:text="#{oferta.botao.encerrar}">Encerrar</a>
+            </td>
+        </tr>
+        </tbody>
+    </table>
+    <p class="empty" th:if="${#lists.isEmpty(ofertas)}" th:text="#{oferta.lista.vazia}">Nenhuma oferta cadastrada.</p>
+</main>
+</body>
+</html>

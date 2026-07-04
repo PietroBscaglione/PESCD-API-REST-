@@ -1,0 +1,67 @@
+<!DOCTYPE html>
+<html lang="pt-BR" xmlns:th="http://www.thymeleaf.org" xmlns:sec="https://www.thymeleaf.org/extras/spring-security">
+<head th:fragment="head(title)">
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title th:text="${title}">PESCD</title>
+    <style>
+        :root { --ink: #17211a; --muted: #647069; --line: #d9e0da; --accent: #1f6f4a; --surface: #fbfdf9; --danger: #9b2c2c; --ok: #1f6f4a; }
+        * { box-sizing: border-box; }
+        body { margin: 0; min-height: 100vh; font-family: Georgia, "Times New Roman", serif; color: var(--ink); background: #f3f6ef; }
+        header { border-bottom: 1px solid var(--line); background: var(--surface); }
+        .topbar { width: min(100%, 1120px); margin: 0 auto; padding: 16px 24px; display: flex; align-items: center; justify-content: space-between; flex-wrap: wrap; gap: 12px; }
+        .brand { font-size: 1.2rem; font-weight: 700; color: var(--accent); text-decoration: none; }
+        nav a { font: 0.85rem Verdana, Geneva, sans-serif; color: var(--accent); margin-right: 16px; text-decoration: none; }
+        nav a:hover { text-decoration: underline; }
+        main { width: min(100%, 1120px); margin: 0 auto; padding: 32px 24px 56px; }
+        h1 { margin: 0 0 8px; font-size: clamp(1.6rem, 4vw, 2.4rem); }
+        .subtitle { color: var(--muted); font: 0.95rem/1.6 Verdana, Geneva, sans-serif; margin-bottom: 24px; }
+        .alert { padding: 12px 16px; margin-bottom: 20px; border-radius: 4px; font: 0.9rem Verdana, Geneva, sans-serif; }
+        .alert-ok { background: #e8f5ee; border: 1px solid var(--ok); color: var(--ok); }
+        .alert-erro { background: #fdeaea; border: 1px solid var(--danger); color: var(--danger); }
+        table { width: 100%; border-collapse: collapse; background: var(--surface); font: 0.9rem Verdana, Geneva, sans-serif; }
+        th, td { padding: 10px 12px; border-bottom: 1px solid var(--line); text-align: left; }
+        th { background: #eef3eb; }
+        .btn { display: inline-block; padding: 8px 14px; border: 1px solid var(--accent); background: transparent; color: var(--accent); text-decoration: none; font: 0.85rem Verdana, Geneva, sans-serif; cursor: pointer; border-radius: 2px; }
+        .btn:hover { background: var(--accent); color: #fff; }
+        .btn-primary { background: var(--accent); color: #fff; }
+        .btn-danger { border-color: var(--danger); color: var(--danger); }
+        .btn-danger:hover { background: var(--danger); color: #fff; }
+        .actions { display: flex; flex-wrap: wrap; gap: 8px; margin-top: 20px; }
+        label { display: block; margin-bottom: 4px; font: 0.85rem Verdana, Geneva, sans-serif; }
+        input, select, textarea { width: 100%; max-width: 480px; padding: 8px; margin-bottom: 16px; border: 1px solid var(--line); font: 0.9rem Verdana, Geneva, sans-serif; }
+        .badge { display: inline-block; padding: 2px 8px; border-radius: 3px; font-size: 0.75rem; background: #eef3eb; }
+        .empty { color: var(--muted); font-style: italic; padding: 24px 0; }
+        ul.instrucoes { font: 0.95rem/1.7 Verdana, Geneva, sans-serif; padding-left: 20px; }
+    </style>
+</head>
+<body>
+<th:block th:fragment="header">
+    <header>
+        <div class="topbar">
+            <a class="brand" th:href="@{/secretario/ofertas}">PESCD</a>
+            <nav>
+                <a th:href="@{/secretario/ofertas}" th:text="#{nav.ofertas}">Ofertas</a>
+                <a th:href="@{/secretario/ofertas/nova}" th:text="#{nav.oferta.nova}">Nova oferta</a>
+                <a th:href="@{/secretario/dashboard}" th:text="#{nav.dashboard}">Painel</a>
+            </nav>
+            <span class="user" style="font:0.85rem Verdana;color:var(--muted);">
+                <span th:text="#{dashboard.logged.as}">Logado como</span>
+                <strong sec:authentication="name">usuario</strong>
+            </span>
+            <form th:action="@{/logout}" method="post" style="margin:0;">
+                <input type="hidden" th:name="${_csrf.parameterName}" th:value="${_csrf.token}"/>
+                <button type="submit" class="btn" th:text="#{dashboard.logout}">Sair</button>
+            </form>
+        </div>
+    </header>
+</th:block>
+<th:block th:fragment="alerts">
+    <div th:if="${sucesso}" class="alert alert-ok" th:text="#{${sucesso}}">Sucesso</div>
+    <div th:if="${erro}" class="alert alert-erro" th:text="#{${erro}}">Erro</div>
+    <div th:if="${csvCriados != null}" class="alert alert-ok">
+        <span th:text="#{csv.resumo(${csvCriados}, ${csvAssociados}, ${csvErros})}">Resumo CSV</span>
+    </div>
+</th:block>
+</body>
+</html>

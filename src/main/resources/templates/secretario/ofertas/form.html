@@ -1,0 +1,32 @@
+<!DOCTYPE html>
+<html lang="pt-BR" xmlns:th="http://www.thymeleaf.org">
+<head th:replace="~{secretario/layout :: head(#{oferta.form.titulo})}"></head>
+<body>
+<div th:replace="~{secretario/layout :: header}"></div>
+<main>
+    <div th:replace="~{secretario/layout :: alerts}"></div>
+    <h1 th:text="#{oferta.form.titulo}">Criar oferta</h1>
+    <p class="subtitle" th:text="#{oferta.form.subtitulo}">Preencha os dados da nova oferta</p>
+    <form th:action="@{/secretario/ofertas/nova}" th:object="${ofertaForm}" method="post">
+        <input type="hidden" th:name="${_csrf.parameterName}" th:value="${_csrf.token}"/>
+        <label for="nome" th:text="#{oferta.campo.nome}">Nome</label>
+        <input id="nome" type="text" th:field="*{nome}" th:placeholder="#{oferta.campo.nome.placeholder}"/>
+        <label for="semestre" th:text="#{oferta.campo.semestre}">Semestre *</label>
+        <input id="semestre" type="text" th:field="*{semestre}" required placeholder="2026/1"/>
+        <label for="dataInicio" th:text="#{oferta.campo.data.inicio}">Data início *</label>
+        <input id="dataInicio" type="date" th:field="*{dataInicio}" required/>
+        <label for="dataFim" th:text="#{oferta.campo.data.fim}">Data fim *</label>
+        <input id="dataFim" type="date" th:field="*{dataFim}" required/>
+        <label for="professorResponsavelId" th:text="#{oferta.campo.professor}">Professor responsável *</label>
+        <select id="professorResponsavelId" th:field="*{professorResponsavelId}" required>
+            <option value="" th:text="#{oferta.campo.professor.selecione}">Selecione</option>
+            <option th:each="p : ${professores}" th:value="${p.id}" th:text="${p.nomeCompleto + ' (' + p.email + ')'}">Professor</option>
+        </select>
+        <div class="actions">
+            <button type="submit" class="btn btn-primary" th:text="#{oferta.botao.salvar}">Salvar</button>
+            <a class="btn" th:href="@{/secretario/ofertas}" th:text="#{botao.cancelar}">Cancelar</a>
+        </div>
+    </form>
+</main>
+</body>
+</html>

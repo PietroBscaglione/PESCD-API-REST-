@@ -1,0 +1,11 @@
+package br.ufscar.dc.dsw.PESCD.models;
+
+public enum StatusAlunoOferta {
+    NAO_ENVIADO,
+    PLANO_ENVIADO,
+    PLANO_APROVADO,
+    DOCUMENTACAO_ENVIADA,
+    RELATORIO_ENVIADO,
+    RELATORIO_APROVADO_PELO_SUPERVISOR,
+    CONCLUIDO_PELO_RESPONSAVEL
+}

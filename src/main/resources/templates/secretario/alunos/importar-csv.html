@@ -1,0 +1,21 @@
+<!DOCTYPE html>
+<html lang="pt-BR" xmlns:th="http://www.thymeleaf.org">
+<head th:replace="~{secretario/layout :: head(#{csv.titulo})}"></head>
+<body>
+<div th:replace="~{secretario/layout :: header}"></div>
+<main>
+    <div th:replace="~{secretario/layout :: alerts}"></div>
+    <h1 th:text="#{csv.titulo}">Importar alunos</h1>
+    <p class="subtitle" th:text="#{csv.subtitulo}">Arquivo CSV com cabeçalho RA,NOME_COMPLETO,EMAIL</p>
+    <form th:action="@{/secretario/ofertas/{id}/alunos/importar-csv(id=${oferta.id})}" method="post" enctype="multipart/form-data">
+        <input type="hidden" th:name="${_csrf.parameterName}" th:value="${_csrf.token}"/>
+        <label for="arquivo" th:text="#{csv.campo.arquivo}">Arquivo</label>
+        <input id="arquivo" type="file" name="arquivo" accept=".csv,text/csv" required/>
+        <div class="actions">
+            <button type="submit" class="btn btn-primary" th:text="#{csv.botao.enviar}">Enviar</button>
+            <a class="btn" th:href="@{/secretario/ofertas/{id}/alunos(id=${oferta.id})}" th:text="#{botao.cancelar}">Cancelar</a>
+        </div>
+    </form>
+</main>
+</body>
+</html>

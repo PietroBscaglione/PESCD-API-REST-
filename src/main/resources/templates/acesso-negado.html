@@ -1,0 +1,51 @@
+<!DOCTYPE html>
+<html lang="pt-BR" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title th:text="#{access.denied.title}">Acesso negado</title>
+    <style>
+        body {
+            min-height: 100vh;
+            margin: 0;
+            display: grid;
+            place-items: center;
+            padding: 24px;
+            font-family: Georgia, "Times New Roman", serif;
+            color: #17211a;
+            background: #f3f6ef;
+        }
+
+        main {
+            max-width: 620px;
+            border-left: 6px solid #8b2417;
+            background: #fbfdf9;
+            padding: 36px;
+            box-shadow: 0 18px 50px rgba(23, 33, 26, 0.12);
+        }
+
+        h1 {
+            margin: 0 0 12px;
+            font-size: 2.4rem;
+        }
+
+        p {
+            margin: 0 0 24px;
+            color: #66716a;
+            font: 1rem/1.6 Verdana, Geneva, sans-serif;
+        }
+
+        a {
+            color: #1f6f4a;
+            font: 700 0.92rem Verdana, Geneva, sans-serif;
+        }
+    </style>
+</head>
+<body>
+<main>
+    <h1 th:text="#{access.denied.title}">Acesso negado</h1>
+    <p th:text="#{access.denied.message}">Seu usuario nao possui permissao para acessar esta funcionalidade.</p>
+    <a th:href="@{/login}" th:text="#{access.denied.back}">Voltar ao login</a>
+</main>
+</body>
+</html>

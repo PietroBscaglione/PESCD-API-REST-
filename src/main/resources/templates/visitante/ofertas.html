@@ -1,0 +1,71 @@
+<!DOCTYPE html>
+<html lang="pt-BR" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>PESCD - Ofertas publicas</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
+    <style>
+        body { background: #f3f6ef; color: #17211a; font-family: Georgia, "Times New Roman", serif; }
+        .topbar, .panel { background: #fbfdf9; border: 1px solid #d9e0da; }
+        .topbar { border-width: 0 0 1px; }
+        .content-shell { max-width: 1120px; }
+        .small-muted, .btn, .table { font-family: Verdana, Geneva, sans-serif; }
+        .small-muted { color: #647069; }
+        .btn-pescd { background: #1f6f4a; border-color: #1f6f4a; color: #fff; font-weight: 700; }
+        .btn-pescd:hover { background: #155637; border-color: #155637; color: #fff; }
+        .btn-outline-pescd { border-color: #1f6f4a; color: #1f6f4a; font-weight: 700; }
+        .btn-outline-pescd:hover { background: #1f6f4a; color: #fff; }
+        .table { --bs-table-bg: #fbfdf9; --bs-table-striped-bg: #f5f8f1; border-color: #d9e0da; }
+    </style>
+</head>
+<body>
+<header class="topbar">
+    <div class="container content-shell py-3 d-flex flex-column flex-sm-row justify-content-between gap-3">
+        <div>
+            <div class="h4 mb-1">PESCD</div>
+            <div class="small-muted">Programa de Est&aacute;gio Supervisionado de Capacita&ccedil;&atilde;o Docente</div>
+        </div>
+        <a class="btn btn-outline-pescd align-self-start" th:href="@{/login}">Voltar para o Login</a>
+    </div>
+</header>
+
+<main class="container content-shell py-5">
+    <div class="d-flex flex-column flex-md-row justify-content-between gap-3 mb-4">
+        <div>
+            <h1 class="display-6 mb-2">Ofertas do Programa PESCD</h1>
+            <p class="small-muted mb-0">Consulte as ofertas cadastradas, organizadas por semestre.</p>
+        </div>
+        <a class="btn btn-pescd align-self-md-end" th:href="@{/login}">Voltar para o Login</a>
+    </div>
+
+    <section class="panel rounded-2 p-3 p-md-4">
+        <div class="table-responsive" th:if="${!#lists.isEmpty(ofertas)}">
+            <table class="table table-striped table-hover align-middle mb-0">
+                <thead>
+                <tr>
+                    <th>Nome da oferta</th>
+                    <th>Semestre</th>
+                    <th>Data de in&iacute;cio</th>
+                    <th>Data de fim</th>
+                    <th>Professor respons&aacute;vel</th>
+                    <th>N&uacute;mero de alunos</th>
+                </tr>
+                </thead>
+                <tbody>
+                <tr th:each="oferta : ${ofertas}">
+                    <td th:text="${oferta.nome}">PESCD 2026/1</td>
+                    <td th:text="${oferta.semestre}">2026/1</td>
+                    <td th:text="${#temporals.format(oferta.dataInicio, 'dd/MM/yyyy')}">01/03/2026</td>
+                    <td th:text="${#temporals.format(oferta.dataFim, 'dd/MM/yyyy')}">15/07/2026</td>
+                    <td th:text="${oferta.professorResponsavel.nomeCompleto}">Professor</td>
+                    <td th:text="${oferta.alunos != null ? oferta.alunos.size() : 0}">0</td>
+                </tr>
+                </tbody>
+            </table>
+        </div>
+        <p class="small-muted mb-0" th:if="${#lists.isEmpty(ofertas)}">Nenhuma oferta cadastrada.</p>
+    </section>
+</main>
+</body>
+</html>

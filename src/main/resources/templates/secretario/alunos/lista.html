@@ -1,0 +1,48 @@
+<!DOCTYPE html>
+<html lang="pt-BR" xmlns:th="http://www.thymeleaf.org">
+<head th:replace="~{secretario/layout :: head(#{aluno.lista.titulo})}"></head>
+<body>
+<div th:replace="~{secretario/layout :: header}"></div>
+<main>
+    <div th:replace="~{secretario/layout :: alerts}"></div>
+    <h1 th:text="#{aluno.lista.titulo}">Alunos da oferta</h1>
+    <p class="subtitle" th:text="${oferta.nome}">Oferta</p>
+    <div class="actions" th:unless="${somenteLeitura}">
+        <a class="btn btn-primary" th:href="@{/secretario/ofertas/{id}/alunos/novo(id=${oferta.id})}" th:text="#{aluno.botao.novo}">Adicionar aluno</a>
+        <a class="btn" th:href="@{/secretario/ofertas/{id}/alunos/importar-csv(id=${oferta.id})}" th:text="#{csv.botao.importar}">Importar CSV</a>
+    </div>
+    <p th:if="${somenteLeitura}" class="alert alert-erro" th:text="#{oferta.error.encerrada}">Oferta concluída</p>
+    <table th:if="${!#lists.isEmpty(alunos)}">
+        <thead>
+        <tr>
+            <th th:text="#{aluno.campo.ra}">RA</th>
+            <th th:text="#{aluno.campo.nome}">Nome</th>
+            <th th:text="#{aluno.campo.email}">E-mail</th>
+            <th th:text="#{aluno.campo.status}">Status</th>
+            <th th:text="#{oferta.campo.acoes}">Ações</th>
+        </tr>
+        </thead>
+        <tbody>
+        <tr th:each="m : ${alunos}">
+            <td th:text="${m.aluno.ra}">RA</td>
+            <td th:text="${m.aluno.nomeCompleto}">Nome</td>
+            <td th:text="${m.aluno.email}">email</td>
+            <td th:text="#{'status.aluno.' + ${m.status.name()}}">Status</td>
+            <td>
+                <a class="btn" th:href="@{/secretario/ofertas/{oid}/alunos/{mid}/detalhes(oid=${oferta.id}, mid=${m.id})}" th:text="#{aluno.botao.detalhes}">Detalhes</a>
+                <a class="btn" th:unless="${somenteLeitura}" th:href="@{/secretario/ofertas/{oid}/alunos/{mid}/editar(oid=${oferta.id}, mid=${m.id})}" th:text="#{botao.editar}">Editar</a>
+                <form th:unless="${somenteLeitura}" th:action="@{/secretario/ofertas/{oid}/alunos/{mid}/excluir(oid=${oferta.id}, mid=${m.id})}" method="post" style="display:inline;">
+                    <input type="hidden" th:name="${_csrf.parameterName}" th:value="${_csrf.token}"/>
+                    <button type="submit" class="btn btn-danger" th:text="#{botao.excluir}" onclick="return confirm('Confirmar?');">Excluir</button>
+                </form>
+            </td>
+        </tr>
+        </tbody>
+    </table>
+    <p class="empty" th:if="${#lists.isEmpty(alunos)}" th:text="#{oferta.alunos.vazio}">Nenhum aluno.</p>
+    <div class="actions">
+        <a class="btn" th:href="@{/secretario/ofertas/{id}(id=${oferta.id})}" th:text="#{botao.voltar.oferta}">Voltar à oferta</a>
+    </div>
+</main>
+</body>
+</html>
