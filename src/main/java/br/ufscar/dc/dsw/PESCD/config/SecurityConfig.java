@@ -35,9 +35,11 @@ public class SecurityConfig {
                 .addFilterBefore(jwtAuthenticationFilter, UsernamePasswordAuthenticationFilter.class)
                 .authorizeHttpRequests(authorize -> authorize
                         .requestMatchers("/", "/login", "/acesso-negado", "/ofertas", "/ofertas/publicas", "/css/**", "/js/**", "/images/**", "/webjars/**").permitAll()
+                        .requestMatchers("/api/ofertas").permitAll()
                         .requestMatchers("/api/auth/login").permitAll()
                         .requestMatchers("/api/auth/me", "/api/auth/logout").authenticated()
                         .requestMatchers("/api/secretario/**").hasRole("SECRETARIO")
+                        .requestMatchers("/api/responsavel/**").hasRole("RESPONSAVEL")
                         .requestMatchers("/admin/**").hasRole("ADMIN")
                         .requestMatchers("/secretario/**").hasRole("SECRETARIO")
                         .requestMatchers("/aluno/**").hasRole("ALUNO")
