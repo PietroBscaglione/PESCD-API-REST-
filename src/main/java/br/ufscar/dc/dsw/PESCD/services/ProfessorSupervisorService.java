@@ -55,6 +55,7 @@ public class ProfessorSupervisorService {
             AprovacaoRelatorioSupervisorRepository aprovacaoRelatorioSupervisorRepository,
             UsuarioRepository usuarioRepository,
             LogStatusAlunoOfertaService logStatusAlunoOfertaService) {
+
         this.alunoOfertaRepository = alunoOfertaRepository;
         this.aprovacaoPlanoRepository = aprovacaoPlanoRepository;
         this.aprovacaoRelatorioSupervisorRepository = aprovacaoRelatorioSupervisorRepository;
@@ -74,7 +75,6 @@ public class ProfessorSupervisorService {
                     id -> new OfertaSupervisionadaDto(oferta, new ArrayList<>()));
             agrupadas.get(oferta.getId()).alunos().add(matricula);
         }
-
         return agrupadas.values().stream()
                 .map(this::toListagemDto)
                 .toList();
@@ -83,6 +83,7 @@ public class ProfessorSupervisorService {
     @Transactional(readOnly = true)
     public AlunoOfertaModel buscarParaAprovarPlano(String username, UUID matriculaId) {
         var matricula = buscarMatriculaSupervisionada(username, matriculaId);
+
         if (matricula.getStatus() != StatusAlunoOferta.PLANO_ENVIADO) {
             throw new ValidacaoNegocioException("supervisor.error.plano.status.invalido");
         }
@@ -98,6 +99,7 @@ public class ProfessorSupervisorService {
     @Transactional(readOnly = true)
     public AprovacaoPlanoDetalheDto buscarDadosAprovacaoPlano(String username, UUID matriculaId) {
         var matricula = buscarParaAprovarPlano(username, matriculaId);
+
         return new AprovacaoPlanoDetalheDto(
                 toMatriculaResumoDto(matricula),
                 toAlunoResumoDto(matricula.getAluno()),
@@ -108,6 +110,7 @@ public class ProfessorSupervisorService {
     @Transactional(readOnly = true)
     public AlunoOfertaModel buscarParaAprovarRelatorio(String username, UUID matriculaId) {
         var matricula = buscarMatriculaSupervisionada(username, matriculaId);
+
         if (matricula.getStatus() != StatusAlunoOferta.RELATORIO_ENVIADO) {
             throw new ValidacaoNegocioException("supervisor.error.relatorio.status.invalido");
         }
@@ -140,11 +143,13 @@ public class ProfessorSupervisorService {
 
     @Transactional(readOnly = true)
     public List<LogStatusAlunoOfertaModel> listarHistorico(UUID matriculaId) {
+
         return logStatusAlunoOfertaService.listarPorMatricula(matriculaId);
     }
 
     @Transactional
     public void aprovarPlano(String username, UUID matriculaId, AprovarPlanoSupervisorForm form) {
+
         var supervisor = usuarioRepository.findByUsername(username).orElseThrow(RecursoNaoEncontradoException::new);
         var matricula = buscarParaAprovarPlano(username, matriculaId);
         var plano = matricula.getPlanoTrabalho();
@@ -169,6 +174,7 @@ public class ProfessorSupervisorService {
 
     @Transactional
     public void aprovarRelatorio(String username, UUID matriculaId, AprovarRelatorioSupervisorForm form) {
+
         var supervisor = usuarioRepository.findByUsername(username).orElseThrow(RecursoNaoEncontradoException::new);
         var matricula = buscarParaAprovarRelatorio(username, matriculaId);
         var relatorio = matricula.getRelatorioFinal();
@@ -195,6 +201,7 @@ public class ProfessorSupervisorService {
 
     @Transactional(readOnly = true)
     public AlunoOfertaModel buscarMatriculaSupervisionada(String username, UUID matriculaId) {
+
         return alunoOfertaRepository.findSupervisionadaByIdAndSupervisorUsername(matriculaId, username)
                 .orElseThrow(RecursoNaoEncontradoException::new);
     }
