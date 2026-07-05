@@ -27,7 +27,7 @@ import java.util.Map;
 import java.util.UUID;
 
 @RestController
-@RequestMapping("/documentos")
+@RequestMapping("/api/documentos")
 public class DocumentoController {
 
     private final PlanoTrabalhoService planoTrabalhoService;
@@ -43,7 +43,7 @@ public class DocumentoController {
         this.relatorioFinalService = relatorioFinalService;
     }
 
-    @PostMapping(value = "/ofertas/{ofertaId}/plano-trabalho", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
+        @PostMapping(value = "/ofertas/{ofertaId}/plano-trabalho", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
     public ResponseEntity<Void> enviarPlanoTrabalho(
             @AuthenticationPrincipal UserDetails usuarioLogado,
             @PathVariable UUID ofertaId,

@@ -1,5 +1,6 @@
 package br.ufscar.dc.dsw.PESCD.config;
 
+import br.ufscar.dc.dsw.PESCD.security.JwtAuthenticationFilter;
 import br.ufscar.dc.dsw.PESCD.security.PerfilAuthenticationFailureHandler;
 import br.ufscar.dc.dsw.PESCD.security.PerfilAuthenticationSuccessHandler;
 import org.springframework.context.annotation.Bean;
@@ -14,6 +15,7 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.web.AuthenticationEntryPoint;
 import org.springframework.security.web.access.AccessDeniedHandler;
 import org.springframework.security.web.SecurityFilterChain;
+import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
 import org.springframework.security.web.util.matcher.RequestMatcher;
 
 @Configuration
@@ -25,10 +27,12 @@ public class SecurityConfig {
     public SecurityFilterChain securityFilterChain(
             HttpSecurity http,
             PerfilAuthenticationSuccessHandler successHandler,
-            PerfilAuthenticationFailureHandler failureHandler) throws Exception {
+            PerfilAuthenticationFailureHandler failureHandler,
+            JwtAuthenticationFilter jwtAuthenticationFilter) throws Exception {
 
         http
                 .csrf(csrf -> csrf.ignoringRequestMatchers("/api/**"))
+                .addFilterBefore(jwtAuthenticationFilter, UsernamePasswordAuthenticationFilter.class)
                 .authorizeHttpRequests(authorize -> authorize
                         .requestMatchers("/", "/login", "/acesso-negado", "/ofertas", "/ofertas/publicas", "/css/**", "/js/**", "/images/**", "/webjars/**").permitAll()
                         .requestMatchers("/api/auth/login").permitAll()

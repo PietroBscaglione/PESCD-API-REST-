@@ -4,6 +4,7 @@ import br.ufscar.dc.dsw.PESCD.exception.RecursoNaoEncontradoException;
 import br.ufscar.dc.dsw.PESCD.models.PerfilUsuario;
 import br.ufscar.dc.dsw.PESCD.models.UsuarioModel;
 import br.ufscar.dc.dsw.PESCD.repositories.UsuarioRepository;
+import br.ufscar.dc.dsw.PESCD.security.JwtService;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.validation.Valid;
 import jakarta.validation.constraints.NotBlank;
@@ -15,6 +16,7 @@ import org.springframework.security.authentication.UsernamePasswordAuthenticatio
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.AuthenticationException;
 import org.springframework.security.core.context.SecurityContextHolder;
+import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.web.context.HttpSessionSecurityContextRepository;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -43,10 +45,15 @@ public class AuthApiController {
 
     private final AuthenticationManager authenticationManager;
     private final UsuarioRepository usuarioRepository;
+    private final JwtService jwtService;
 
-    public AuthApiController(AuthenticationManager authenticationManager, UsuarioRepository usuarioRepository) {
+    public AuthApiController(
+            AuthenticationManager authenticationManager,
+            UsuarioRepository usuarioRepository,
+            JwtService jwtService) {
         this.authenticationManager = authenticationManager;
         this.usuarioRepository = usuarioRepository;
+        this.jwtService = jwtService;
     }
 
     @PostMapping("/login")
@@ -64,7 +71,9 @@ public class AuthApiController {
                     HttpSessionSecurityContextRepository.SPRING_SECURITY_CONTEXT_KEY,
                     context);
 
-            return ResponseEntity.ok(toUsuarioAutenticadoResponse(authentication.getName()));
+            var userDetails = (UserDetails) authentication.getPrincipal();
+            var token = jwtService.generateToken(userDetails);
+            return ResponseEntity.ok(toUsuarioAutenticadoResponse(authentication.getName(), token));
         } catch (DisabledException ex) {
             return ResponseEntity.status(HttpStatus.FORBIDDEN)
                     .body(new AuthErrorResponse("FORBIDDEN", "login.error.disabled"));
@@ -79,7 +88,7 @@ public class AuthApiController {
         if (authentication == null || !authentication.isAuthenticated()) {
             throw new RecursoNaoEncontradoException();
         }
-        return toUsuarioAutenticadoResponse(authentication.getName());
+        return toUsuarioAutenticadoResponse(authentication.getName(), null);
     }
 
     @PostMapping("/logout")
@@ -92,7 +101,7 @@ public class AuthApiController {
         return ResponseEntity.noContent().build();
     }
 
-    private UsuarioAutenticadoResponse toUsuarioAutenticadoResponse(String username) {
+    private UsuarioAutenticadoResponse toUsuarioAutenticadoResponse(String username, String token) {
         var usuario = usuarioRepository.findByUsername(username)
                 .orElseThrow(RecursoNaoEncontradoException::new);
         var perfis = listarPerfisOrdenados(usuario);
@@ -107,7 +116,8 @@ public class AuthApiController {
                 usuario.getEmail(),
                 perfis.stream().map(PerfilUsuario::name).toList(),
                 dashboardPrincipal,
-                acessos);
+                acessos,
+                token);
     }
 
     private List<PerfilUsuario> listarPerfisOrdenados(UsuarioModel usuario) {
@@ -132,7 +142,8 @@ public class AuthApiController {
             String email,
             List<String> perfis,
             String dashboardPrincipal,
-            List<AcessoPerfilResponse> acessos
+            List<AcessoPerfilResponse> acessos,
+            String token
     ) {
     }
 

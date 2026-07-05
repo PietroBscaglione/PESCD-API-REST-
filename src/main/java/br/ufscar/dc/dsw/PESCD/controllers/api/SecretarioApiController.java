@@ -28,6 +28,7 @@ import br.ufscar.dc.dsw.PESCD.services.UsuarioService;
 import jakarta.validation.Valid;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
+import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
@@ -96,6 +97,17 @@ public class SecretarioApiController {
     @GetMapping("/ofertas/{ofertaId}")
     public OfertaDetalhesResponse detalharOferta(@PathVariable UUID ofertaId) {
         return toOfertaDetalhesResponse(ofertaService.buscarDetalhes(ofertaId));
+    }
+
+    @GetMapping("/ofertas/{ofertaId}/exportar-resultados")
+    public ResponseEntity<byte[]> exportarResultados(@PathVariable UUID ofertaId) {
+        var resultado = ofertaService.exportarResultadosCsv(ofertaId);
+        return ResponseEntity.ok()
+                .contentType(MediaType.parseMediaType("text/csv; charset=UTF-8"))
+                .header(
+                        HttpHeaders.CONTENT_DISPOSITION,
+                        "attachment; filename=\"" + resultado.nomeArquivo() + "\"")
+                .body(resultado.conteudo());
     }
 
     @GetMapping("/ofertas/{ofertaId}/alunos")
