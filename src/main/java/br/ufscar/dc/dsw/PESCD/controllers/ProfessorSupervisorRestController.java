@@ -53,15 +53,19 @@ public class ProfessorSupervisorRestController {
                 id));
     }
 
-    @PostMapping("/{id}/aprovar-plano")
-    public ResponseEntity<Void> aprovarPlano(
-            @PathVariable UUID id,
-            @AuthenticationPrincipal UserDetails usuarioAutenticado,
-            @Valid @RequestBody AprovarPlanoSupervisorForm form) {
+        @PostMapping("/{id}/aprovar-plano")
+        public ResponseEntity<?> aprovarPlano(
+                @PathVariable UUID id,
+                @AuthenticationPrincipal UserDetails usuarioAutenticado,
+                @Valid @RequestBody AprovarPlanoSupervisorForm form) {
 
-        professorSupervisorService.aprovarPlano(usuarioAutenticado.getUsername(), id, form);
-        return ResponseEntity.ok().build();
-    }
+            try {
+                professorSupervisorService.aprovarPlano(usuarioAutenticado.getUsername(), id, form);
+                return ResponseEntity.ok().build();
+            } catch (br.ufscar.dc.dsw.PESCD.exception.ValidacaoNegocioException ex) {
+                return ResponseEntity.badRequest().body(ex.getMessageKey());
+            }
+        }
 
     @GetMapping("/{id}/aprovar-relatorio")
     public ResponseEntity<AprovacaoRelatorioDetalheDto> exibirAprovacaoRelatorio(
@@ -74,15 +78,18 @@ public class ProfessorSupervisorRestController {
     }
 
     @PostMapping("/{id}/aprovar-relatorio")
-    public ResponseEntity<Void> aprovarRelatorio(
+    public ResponseEntity<?> aprovarRelatorio(
             @PathVariable UUID id,
             @AuthenticationPrincipal UserDetails usuarioAutenticado,
             @Valid @RequestBody AprovarRelatorioSupervisorForm form) {
 
-        professorSupervisorService.aprovarRelatorio(usuarioAutenticado.getUsername(), id, form);
-        return ResponseEntity.ok().build();
+        try {
+            professorSupervisorService.aprovarRelatorio(usuarioAutenticado.getUsername(), id, form);
+            return ResponseEntity.ok().build();
+        } catch (br.ufscar.dc.dsw.PESCD.exception.ValidacaoNegocioException ex) {
+            return ResponseEntity.badRequest().body(ex.getMessageKey());
+        }
     }
-
     @GetMapping("/{id}/plano")
     public ResponseEntity<Resource> baixarPlano(
             @PathVariable UUID id,
