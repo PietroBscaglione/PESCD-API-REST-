@@ -2,7 +2,7 @@ package br.ufscar.dc.dsw.PESCD.exception;
 
 import br.ufscar.dc.dsw.PESCD.controllers.api.AuthApiController;
 import br.ufscar.dc.dsw.PESCD.controllers.api.SecretarioApiController;
-import br.ufscar.dc.dsw.PESCD.controllers.ProfessorSupervisorRestController;
+import br.ufscar.dc.dsw.PESCD.controllers.api.ProfessorSupervisorRestController;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.http.HttpStatus;

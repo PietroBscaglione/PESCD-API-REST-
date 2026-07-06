@@ -1,4 +1,4 @@
-package br.ufscar.dc.dsw.PESCD.controllers;
+package br.ufscar.dc.dsw.PESCD.antes_conversao;
 
 import br.ufscar.dc.dsw.PESCD.dtos.AlunoMatriculaForm;
 import br.ufscar.dc.dsw.PESCD.exception.OfertaEncerradaException;

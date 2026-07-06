@@ -1,7 +1,7 @@
 package br.ufscar.dc.dsw.PESCD.exception;
 
-import br.ufscar.dc.dsw.PESCD.controllers.SecretarioAlunoOfertaController;
-import br.ufscar.dc.dsw.PESCD.controllers.SecretarioOfertaController;
+import br.ufscar.dc.dsw.PESCD.antes_conversao.SecretarioAlunoOfertaController;
+import br.ufscar.dc.dsw.PESCD.antes_conversao.SecretarioOfertaController;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.web.bind.annotation.ControllerAdvice;

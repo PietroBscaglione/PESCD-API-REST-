@@ -1,4 +1,4 @@
-package br.ufscar.dc.dsw.PESCD.controllers;
+package br.ufscar.dc.dsw.PESCD.controllers.api;
 
 import br.ufscar.dc.dsw.PESCD.dtos.AprovarPlanoSupervisorForm;
 import br.ufscar.dc.dsw.PESCD.dtos.AprovarRelatorioSupervisorForm;
