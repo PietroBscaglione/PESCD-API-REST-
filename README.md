@@ -61,101 +61,217 @@ Ao iniciar a aplicacao com o banco vazio, `PescdApplication` cria dados iniciais
 
 ## Contribuicoes por integrante
 
-### Renato Dias
+# Distribuição de Responsabilidades da Equipe
 
-Responsavel pela implementacao das funcionalidades de autenticacao/controle de acesso e das user stories do perfil Secretario.
+## Renato Dias
 
-#### Login e controle de acesso
+Responsável pela implementação das funcionalidades de autenticação, controle de acesso e das User Stories do perfil **Secretário**.
 
-- Implementacao da autenticacao com Spring Security.
-- Criacao dos perfis de usuario e controle de acesso por role.
-- Redirecionamento pos-login conforme o perfil do usuario.
-- Telas de login, acesso negado e dashboard inicial.
-- Carga inicial de usuarios/perfis para testes.
+### Login e Controle de Acesso
 
-Commits e PR associados:
+- Implementação da autenticação **Stateless** com Spring Security e geração de Tokens JWT.
+- Criação dos perfis de usuário e controle de acesso por atributos e anotações `@PreAuthorize("hasRole(...)")`.
+- Resposta padronizada em formato JSON para sucesso ou falha na autenticação via Handlers customizados.
+- Implementação dos endpoints REST:
+  - `/api/auth/login`
+  - `/api/auth/me`
+  - `/api/auth/logout`
+- Carga inicial de usuários e perfis para testes.
 
-- [f12d4ed0c041b59d6628c82521966678b05a9e00](https://github.com/Hakirius/PESCD/commit/f12d4ed0c041b59d6628c82521966678b05a9e00) - Implementando login e autenticacao para os diferentes usuarios.
-- [f2014f347272be607d715312acd403d4df9198e3](https://github.com/Hakirius/PESCD/commit/f2014f347272be607d715312acd403d4df9198e3) - Merge da pull request de login e controle de acesso.
-- [Pull Request #1](https://github.com/Hakirius/PESCD/pull/1) - `feature/u01-login-controle-acesso`.
+#### Commits e Pull Request
 
-#### User stories do Secretario: S1, S2, S3 e S4
+- `f12d4ed0c041b59d6628c82521966678b05a9e00` — Implementando login e autenticação para os diferentes usuários.
+- `f2014f347272be607d715312acd403d4df9198e3` — Merge da pull request de login e controle de acesso.
+- **Pull Request #1** — `feature/u01-login-controle-acesso`.
 
-- Criacao e listagem de ofertas pelo secretario.
-- Definicao do professor responsavel pela oferta.
-- Visualizacao de detalhes da oferta, alunos vinculados e status de acompanhamento.
-- Associacao, edicao e remocao de alunos em ofertas.
-- Importacao de alunos por CSV, com criacao automatica de usuario aluno quando necessario.
-- Validacoes de negocio para evitar duplicidade de matricula, RA/e-mail duplicado e edicao de oferta encerrada.
-- Registro de historico/status da matricula.
-- Encerramento de oferta pelo secretario apos conclusao pelo professor responsavel.
-- Exportacao dos resultados finais da oferta em CSV.
-- Criacao das telas do modulo Secretario para ofertas e alunos.
-- Internacionalizacao das mensagens do fluxo em portugues e ingles.
+---
 
-Commit associado:
+### User Stories do Secretário (S1, S2, S3 e S4)
 
-- [08f4da10d1f942cdc3bd6843fc8b6102d75bb11c](https://github.com/Hakirius/PESCD/commit/08f4da10d1f942cdc3bd6843fc8b6102d75bb11c) - Implementacao das user stories S1, S2, S3 e S4.
+- Criação e listagem de ofertas através de endpoints REST utilizando os verbos **POST** e **GET**.
+- Definição do professor responsável pela oferta via payload JSON.
+- Visualização dos detalhes da oferta, alunos vinculados e status utilizando DTOs.
+- Associação, edição e remoção de alunos nas ofertas utilizando **POST**, **PUT** e **DELETE**.
+- Importação de alunos por upload de arquivo CSV (`multipart/form-data`), criando automaticamente usuários do tipo aluno quando necessário.
+- Implementação de validações para:
+  - impedir duplicidade de matrícula;
+  - impedir RA duplicado;
+  - impedir e-mail duplicado;
+  - impedir edição de ofertas encerradas.
+- Tratamento das exceções através de `RestControllerAdvice`.
+- Registro de histórico e status das matrículas.
+- Encerramento de ofertas pelo secretário após conclusão pelo professor responsável.
+- Exportação dos resultados finais em formato CSV.
+- Estruturação dos controladores REST do módulo Secretário.
+- Internacionalização das mensagens de erro e validação (Português e Inglês).
 
-### Pietro Scaglione
+#### Commit
 
-Responsável pela implementação das funcionalidades do perfil Aluno, englobando o fluxo completo de estágio e pedidos de dispensa, e pelo módulo de gerenciamento de usuários do perfil Administrador.
+- `08f4da10d1f942cdc3bd6843fc8b6102d75bb11c` — Implementação das User Stories S1, S2, S3 e S4.
 
-#### User stories do Aluno: AL.01, AL.02, AL.03 e AL.04
+---
 
-- **Visualização de Ofertas (AL.01):** Criação de listagem dinâmica de ofertas vinculadas estritamente ao aluno autenticado na sessão, exibindo semestre, datas, professor responsável e status.
-- **Envio de Plano de Trabalho (AL.02):** Implementação de formulário para upload de plano de trabalho em PDF (validação de limite de 5MB), com seleção dinâmica de professor supervisor e transição automática do status da matrícula para "Plano Enviado".
-- **Dispensa por Docência (AL.03):** Desenvolvimento do fluxo de envio de documentação comprobatória de docência no ensino superior para fins de obtenção de créditos/dispensa, com validação de arquivo e alteração de status para "Documentação Enviada".
-- **Relatório Final de Estágio (AL.04):** Implementação da tela de encerramento do estágio contendo área de leitura dos dados anteriores (oferta e plano) e formulário para envio do relatório em PDF junto ao indicador de frequência (0 a 100%), avançando o status para "Relatório Enviado".
-- **Internacionalização:** Adaptação de todas as views do módulo Aluno para suporte a múltiplos idiomas (português/inglês) via chaves de mensagens.
+# Pietro Scaglione
 
+Responsável pela implementação das funcionalidades do perfil **Aluno**, abrangendo todo o fluxo de estágio e pedidos de dispensa, além do módulo de gerenciamento de usuários do perfil **Administrador**.
 
-#### User stories do Administrador: AD.01
+## User Stories do Aluno (AL.01, AL.02, AL.03 e AL.04)
 
-- **Gerenciamento de Usuários:** Criação do CRUD completo (Listar, Criar, Editar e Excluir) para controle de acessos dos perfis Administrador, Secretário e Professor.
-- **Validações de Segurança:** Implementação de restrição de unicidade para e-mails e bloqueio lógico para impedir que o administrador logado exclua a própria conta.
-- **Correção de Bug Crítico (Exclusão de Usuários):** Resolução de crash do sistema (HTTP 500) ao deletar usuários com vínculos ativos no banco de dados. Ajuste nos mapeamentos de relacionamentos e tratamento de `DataIntegrityViolationException` com feedback amigável via interface.
-- **Interface e i18n:** Telas administrativas padronizadas em Bootstrap e totalmente internacionalizadas.
+### AL.01 — Visualização de Ofertas
 
-Commits associados:
+- Endpoint para listagem dinâmica das ofertas vinculadas exclusivamente ao aluno autenticado via Token JWT (`@AuthenticationPrincipal`).
+- Retorno estruturado em JSON.
 
-- `a1281cf5f1cd550ddad59afcd8892155e57eca14` - Implementação AL.01, AL.02, AL.03, AL.04 e AD.01.
-- `1b1eb52faef164fb670e908732612e944b10b952` - Hotfix: Correção de integridade referencial e crash na exclusão de usuários.
+### AL.02 — Envio de Plano de Trabalho
 
-### Samuel Gerga Martins
+- Endpoint `multipart/form-data` para upload do Plano de Trabalho em PDF.
+- Validação de tamanho máximo de **5 MB**.
+- Recepção conjunta de arquivo e parâmetros textuais.
+- Alteração automática do status da matrícula para **Plano Enviado**.
 
-Responsável pela implementação das funcionalidades do perfil Professor Supervisor (PS)
+### AL.03 — Dispensa por Docência
 
-Responsável por orquestrar o fluxo de acompanhamento, avaliação e aprovação de alunos em estágio, além da implementação de uma funcionalidade extra de geração de relatórios.
+- Implementação do fluxo REST para envio da documentação comprobatória em PDF.
+- Validação do tipo de mídia.
+- Atualização automática do status para **Documentação Enviada**.
 
-**User stories do Professor Supervisor: PS.01, PS.02, PS.03 **
+### AL.04 — Relatório Final de Estágio
 
-- **Visualização de Ofertas e Supervisionados (PS.01):** Criação de *dashboard* dinâmico (listagem) vinculando as ofertas aos alunos sob a supervisão do professor autenticado. Implementação de lógica de agrupamento de dados no *back-end* (via DTOs e `Map`) e exibição condicional de botões de ação no *front-end* (Thymeleaf) baseada no status atual da matrícula do aluno.
-- **Aprovação de Plano de Trabalho (PS.02):** Desenvolvimento do fluxo de avaliação inicial do estágio. Implementação de tela com carregamento de dados em modo leitura (detalhes do plano e visualização do arquivo PDF) e formulário para captura do parecer do supervisor. Inclui transição atômica de status para "Plano Aprovado", persistência no banco de dados e geração automatizada do *timestamp* da operação.
-- **Aprovação de Relatório Final (PS.03):** Construção do formulário de avaliação de encerramento, consolidando dados do plano, relatório final em PDF e histórico de mudanças de status. Desenvolvimento da lógica de aprovação exigindo preenchimento obrigatório de parecer, validação/edição de frequência (0 a 100%) e atribuição de sugestão de nota (A, B, C, D ou E), avançando o status para "Relatório Aprovado pelo Supervisor" com registro no log de auditoria.
-- **Segurança e Internacionalização:** Adaptação de todas as *views* do módulo do Supervisor para suporte a múltiplos idiomas (português/inglês) utilizando arquivos de *properties*. Implementação de validações de segurança no *back-end* (Spring Security) para garantir que o professor logado tenha acesso e permissão de aprovação restritos apenas aos alunos sob sua própria supervisão.
-Commits associados:
-- `feat: Professor Supervisor` : Implementação do painel de listagem de alunos e dos fluxos de aprovação de planos de trabalho e relatórios finais (PS.01, PS.02 e PS.03).
-- `feat: EXPORT CSV` : : Implementação da estória surpresa para exportação dos resultados finais dos alunos em formato de arquivo CSV.
+- Endpoint para envio do relatório final em PDF.
+- Validação do arquivo.
+- Recepção da frequência do aluno.
+- Atualização automática do status para **Relatório Enviado**.
 
-### Leonardo Shoji Ishiy
+### Internacionalização
 
-Responsável pela implementação das funcionalidades do perfil Professor Responsável, englobando a aprovação final dos alunos e o fechamento das turmas, além do módulo de acesso público para Visitantes.
+- Adaptação das respostas de erro do módulo Aluno para múltiplos idiomas.
 
-#### User stories do Professor Responsável e Visitante: PR.01, PR.02, PR.03, PR.04 e V.01
+---
 
-- **Acesso de Visitante (V.01):** Configuração de rota pública (`/ofertas`) com liberação de acesso no Spring Security, exibindo uma listagem das ofertas ativas ordenadas de forma decrescente pelo semestre para usuários não logados.
-- **Acompanhamento de Ofertas (PR.04):** Criação do painel (dashboard) do Professor Responsável, exibindo estritamente as turmas vinculadas ao usuário logado. Implementação de cálculo dinâmico para o status de exibição da oferta (Em andamento, Em atraso, Concluída) e renderização dos alunos inscritos.
-- **Conclusão de Relatório de Estágio (PR.01):** Implementação da tela de aprovação final do estágio regular. Integração de lógica no Controller para buscar e pré-carregar automaticamente no formulário a frequência e a nota sugeridas anteriormente pelo Professor Supervisor.
-- **Análise de Documentação de Docência (PR.02):** Criação do fluxo de aprovação direta para alunos com pedido de dispensa por docência no ensino superior, permitindo a leitura dos comprovantes e a inserção do parecer, nota e frequência finais, alterando o status da matrícula para "Concluído pelo responsável".
-- **Encerramento de Oferta e Estatísticas (PR.03):** Desenvolvimento do algoritmo de fechamento de turma. Implementação de validações na camada de serviço (via `ValidacaoNegocioException`) para garantir que a oferta só possa ser encerrada se 100% dos alunos estiverem avaliados.
-- **Segurança e Renderização Dinâmica:** Resolução de restrições de segurança do Thymeleaf (bloqueio de expressões SpEL em classes utilitárias como `DoubleSummaryStatistics`) centralizando o cálculo de médias e estatísticas da turma no back-end. Uso avançado de diretivas `th:if` na interface para ocultar botões indevidos (ex: esconder a opção de encerramento de uma oferta que já foi finalizada).
+## User Story do Administrador (AD.01)
 
-Commits e PR associados:
+### Gerenciamento de Usuários
 
-Commits e PR associados:
+- Desenvolvimento de um CRUD totalmente RESTful:
+  - GET
+  - POST
+  - PUT
+  - DELETE
+- Comunicação utilizando `application/json`.
 
-- [05caecbeaf1a9b3a30c889ab645e6e475ea776ca](https://github.com/Hakirius/PESCD/commit/05caecbeaf1a9b3a30c889ab645e6e475ea776ca) - Implementadas as User Stories de Professor Responsável (PR.01 a PR.04) e Visitante (V.01).
+### Validações de Segurança
+
+- Restrição de e-mails duplicados.
+- Impedimento de exclusão do próprio administrador autenticado.
+
+### Correção de Bug Crítico
+
+- Correção da exclusão de usuários com vínculos ativos.
+- Tratamento de `DataIntegrityViolationException`.
+- Retorno de **HTTP 409 Conflict** com mensagem amigável em JSON.
+
+### Interface e Internacionalização
+
+- Padronização das respostas JSON.
+- Internacionalização completa do módulo administrativo.
+
+#### Commits
+
+- `a1281cf5f1cd550ddad59afcd8892155e57eca14` — Implementação AL.01, AL.02, AL.03, AL.04 e AD.01.
+- `1b1eb52faef164fb670e908732612e944b10b952` — Hotfix de integridade referencial na exclusão de usuários.
+
+---
+
+# Samuel Gerga Martins
+
+Responsável pela implementação das funcionalidades do perfil **Professor Supervisor**, incluindo o fluxo completo de acompanhamento e avaliação dos alunos.
+
+## User Stories (PS.01, PS.02 e PS.03)
+
+### PS.01 — Visualização de Ofertas e Supervisionados
+
+- Desenvolvimento do controlador REST:
+  - `/api/supervisor/supervisao`
+- Listagem dinâmica das ofertas e alunos supervisionados.
+- Utilização de DTOs aninhados.
+- Associação automática ao professor autenticado via Token JWT.
+
+### PS.02 — Aprovação do Plano de Trabalho
+
+- Endpoint:
+  - `POST .../aprovar-plano`
+- Consulta em modo leitura via GET.
+- Recepção do parecer em JSON.
+- Atualização automática do status para **Plano Aprovado**.
+- Registro automático do timestamp.
+
+### PS.03 — Aprovação do Relatório Final
+
+- Endpoint:
+  - `POST .../aprovar-relatorio`
+- Validação obrigatória do parecer.
+- Validação da frequência entre **0 e 100%**.
+- Validação da nota baseada no Enum `Nota`.
+- Registro em histórico de auditoria.
+
+### Segurança e Internacionalização
+
+- Internacionalização das mensagens do módulo Supervisor.
+- Garantia de que cada supervisor possa acessar apenas alunos sob sua responsabilidade.
+
+#### Commits
+
+- `feat: Professor Supervisor` — Implementação do painel de listagem e dos fluxos PS.01, PS.02 e PS.03.
+- `feat: EXPORT CSV` — Implementação da funcionalidade extra de exportação dos resultados em CSV.
+
+---
+
+# Leonardo Shoji Ishiy
+
+Responsável pela implementação das funcionalidades do perfil **Professor Responsável** e do módulo público de **Visitantes**.
+
+## User Stories (PR.01, PR.02, PR.03, PR.04 e V.01)
+
+### V.01 — Acesso de Visitante
+
+- Configuração da rota pública:
+  - `/api/ofertas`
+- Liberação explícita na configuração do Spring Security.
+- Listagem das ofertas ativas ordenadas por semestre.
+- Resposta em JSON.
+
+### PR.04 — Acompanhamento de Ofertas
+
+- Desenvolvimento dos endpoints para acompanhamento das turmas.
+- Retorno apenas das ofertas vinculadas ao professor autenticado.
+- Cálculo dinâmico do status:
+  - Em andamento
+  - Em atraso
+  - Concluída
+- Serialização dos alunos vinculados.
+
+### PR.01 — Conclusão do Relatório de Estágio
+
+- Aprovação final do estágio.
+- Reaproveitamento automático da frequência e nota atribuídas pelo Professor Supervisor.
+
+### PR.02 — Análise da Documentação de Docência
+
+- Homologação dos pedidos de dispensa.
+- Recepção de parecer técnico.
+- Registro da nota final.
+- Consolidação da carga horária.
+
+### PR.03 — Encerramento da Oferta
+
+- Implementação do algoritmo de encerramento da turma.
+- Validação para impedir encerramento enquanto existirem alunos pendentes.
+
+### Segurança e Renderização Dinâmica
+
+- Centralização do cálculo de médias e estatísticas no back-end.
+- Eliminação de regras anteriormente executadas no front-end.
+- Inclusão de campos booleanos e estados que orientam a interface do cliente quanto às ações disponíveis.
 
 ### Grupo
 - **Exportação de Resultados em CSV (Estória Surpresa):** Criação de funcionalidade para extração dos dados consolidados do estágio. Implementação de *endpoint* HTTP com manipulação de cabeçalhos (`Content-Disposition: attachment`) para gerar e acionar o download automático do arquivo `.csv` na máquina do usuário.
